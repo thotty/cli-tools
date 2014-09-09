@@ -1,0 +1,89 @@
+#!/bin/bash
+
+header="
+ /===================\\
+ |sosthenes cli tools|
+ \\===================/
+-> withfilesOutOfChangelistsDo
+"
+error="$header
+:( Erro!
+Tente 'withfilesOutOfChangelistsDo help' na próxima vez
+"
+action=$1
+
+case $action in
+    "svn")
+        if [ "$2" = "" ]; then
+            echo "$error
+mensagem: svn espera pelo menos um parametro"
+            exit
+        fi
+        files=$(svn st | awk '{ if ($3) print ">>"; else print $2 }' | tr "\n" " " | sed s/\>\>.*//)
+        if [ "${files//[[:space:]]/}" = "" ]; then
+            echo "$header
+Nenhum arquivo encontrado! Tchau."
+            exit
+        fi
+        read -p "$header
+Vai executar:
+$@ $files
+Pode executar? (s/n)
+" -n 1
+        if [[ $REPLY =~ ^[Ss]$ ]]; then
+            echo "
+Ok, executando...
+"
+            $@ $files
+        else 
+            echo "
+Não, então tchau!
+"
+        fi
+    ;;
+
+    "list")
+        
+        files=""
+        if [ "$2" = "inline" ]; then
+            files=$(svn st | awk '{ if ($3) print ">>"; else print $2 }' | tr "\n" " " | sed s/\>\>.*//)
+        else
+            files=$(svn st | awk '{ if ($3) print ">>"; else print $2 }' | tr "\n" " " | sed s/\>\>.*// | tr " " "\n")
+        fi
+        if [ "${files//[[:space:]]/}" = "" ]; then
+            echo "$header
+Nenhum arquivo encontrado! Tchau."
+            exit
+        fi
+
+        echo "$header
+Listando os arquivos:
+$files
+"
+    ;;
+
+    *)
+        echo "$header
+Modo de uso:
+    withfilesOutOfChangelistsDo svn *svn-command  Executa *svn-command nos arquivos que 
+                                                  estão fora das Changelists do SVN
+    withfilesOutOfChangelistsDo list [inline]     Lista os arquivos das Changelists do 
+                                                  SVN. Se passado 'inline' vai listar
+                                                  os arquivos em uma linha
+    withfilesOutOfChangelistsDo help              Mostra esta mensagem
+"
+        read -p "Você quer ver o 'svn help' agora? (s/n)
+" -n 1
+        if [[ $REPLY =~ ^[Ss]$ ]]; then
+            svn help
+        else 
+            echo "
+Não, então tchau!
+"
+        fi
+    ;;
+esac
+
+echo "
+"
+exit
