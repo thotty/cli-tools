@@ -1,0 +1,93 @@
+#!/bin/bash
+
+header="
+ /===================\\
+ |sosthenes cli tools|
+ \\===================/
+-> proxyIgnoreTools
+"
+error="$header
+Error!
+try 'proxyIgnoreTools help' in next time
+"
+action=$1
+ignoreHost=$2
+ignoredHosts=$(gsettings get org.gnome.system.proxy ignore-hosts)
+
+case $action in
+    "add")
+        if [ "$ignoreHost" = "" ]; then
+            echo "$error
+message: add expects one parameter: the host or ip to ignore"
+            exit
+        fi
+
+        echo "$header
+add '$ignoreHost' on $ignoredHosts"
+
+        newIgnoredHosts=""
+        counter=0
+        for i in $ignoredHosts; do
+#            echo "no indice $counter o item é $i"
+            newIgnoredHosts="$newIgnoredHosts $i"
+            if [ "$counter" = "1" ]; then
+                newIgnoredHosts="$newIgnoredHosts '$ignoreHost',"
+#                echo "adicionar aqui!"        
+            fi
+            let counter=counter+1
+        done
+
+        echo "new list $newIgnoredHosts"
+        gsettings set org.gnome.system.proxy ignore-hosts "$newIgnoredHosts"
+    ;;
+
+    "remove")
+        if [ "$ignoreHost" = "" ]; then
+            echo "$error
+message: remove expects one parameter: the host or ip to remove from list"
+            exit
+        fi
+
+        echo "$header
+remove $ignoreHost from list $ignoredHosts" 
+        
+        newIgnoredHosts=""
+        counter=0
+        found=false
+        for i in $ignoredHosts; do
+#            echo "no indice $counter o item é $i, procurar: $ignoreHost"
+            if [ "$i" = "'$ignoreHost'," ]; then
+                found=true
+                echo "found host or ip '$ignoreHost' to remove"
+            else 
+                newIgnoredHosts="$newIgnoredHosts $i"
+            fi
+            let counter=counter+1
+        done
+        
+        if $found; then
+            echo "new list $newIgnoredHosts"
+        else
+            echo "'$ignoreHost' not found"
+        fi
+        gsettings set org.gnome.system.proxy ignore-hosts "$newIgnoredHosts"
+    ;;
+
+    "list")
+        echo "$header
+list of proxy ignore settings:
+$ignoredHosts"
+    ;;
+
+    *)
+        echo "$header
+Usage:
+    proxyIgnoreTools [add|remove] host_or_ip_to_ignore  add or remove a host
+    proxyIgnoreTools list                               list all hosts
+    proxyIgnoreTools help                               show this message"
+    ;;
+esac
+
+echo "
+"
+exit
