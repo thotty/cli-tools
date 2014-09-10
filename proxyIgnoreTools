@@ -82,9 +82,9 @@ $ignoredHosts"
     *)
         echo "$header
 Usage:
-    proxyIgnoreTools [add|remove] host_or_ip_to_ignore  add or remove a host
-    proxyIgnoreTools list                               list all hosts
-    proxyIgnoreTools help                               show this message"
+    proxyIgnoreTools [add|remove] host_or_ip  add or remove a host
+    proxyIgnoreTools list                     list all hosts
+    proxyIgnoreTools help                     show this message"
     ;;
 esac
 
