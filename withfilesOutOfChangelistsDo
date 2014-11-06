@@ -25,10 +25,10 @@ mensagem: svn espera pelo menos um parametro"
 Nenhum arquivo encontrado! Tchau."
             exit
         fi
-        read -p "$header
+        echo "$header
 Vai executar:
-$@ $files
-Pode executar? (s/n)
+$@ $files"
+        read -p "Pode executar? (s/n)
 " -n 1
         if [[ $REPLY =~ ^[Ss]$ ]]; then
             echo "
