@@ -1,0 +1,13 @@
+#!/bin/bash 
+
+echo -e "\e[0;35m
+Listando os links simbólicos dentro de \e[1;35m$1
+\e[1;0m"
+cmd=$2
+if [ !-z $cmd ] 
+then
+	find $1 -type l -exec ls -lad --color {}  \;
+else
+
+	find $1 -type l -exec $cmd {} \;
+fi
