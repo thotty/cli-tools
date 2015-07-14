@@ -1,0 +1,17 @@
+#!/bin/bash
+
+echo -e "\e[0;35m
+'svn st' primeiramente...
+\e[0m"
+svn st /home/sosthenes/Folha\ de\ Ponto/ /home/sosthenes/SVN/*
+echo -e "\e[0;35m
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+\e[0m"
+echo -e "\e[0;35m
+Fazendo 'svn up' em tudo...
+\e[0m"
+svn up /home/sosthenes/Folha\ de\ Ponto/ /home/sosthenes/SVN/* 
+echo -e "\e[0;35m
+;) THE END
+\e[0m"

@@ -1,0 +1,124 @@
+#!/usr/bin/nodejs
+
+var repos = {
+    sial: [
+        'SSPCore/',
+        'mainapp/'
+    ],
+    aux: [
+        'static_cdn/',
+        'libcorp/'
+    ],
+    apps: [
+        'simac/',
+        'sit/',
+        'brigadistas/',
+        'sgd/',
+        'sisfamilias/',
+        'capacitacao/',
+        'wiadmin/',
+        'voluntariado/',
+        'infoconv/',
+        'sysrelease/',
+        'cairu/',
+        'sismidia/',
+        'sofia/',
+        'sigicmbio/'
+    ]
+};
+
+var fail = function (text) {
+    'use strict';
+
+    process.stderr.write(('\n' + text + '\n').red);
+    process.exit();
+};
+
+var colors = require('colors'),
+    exec =  require('child_process').exec;
+
+console.info('\n>> Agora sob Node.JS :D\n'.inverse.bold);
+
+var args = process.argv,
+    svnArg = args.splice(2),
+    svnArgStr = svnArg.join(' '),
+    cmdArgDefault = [
+        repos.sial.join(' '),
+        repos.aux.join(' '),
+        repos.apps.join(' ')
+    ].join(' ');
+
+if (!svnArgStr) {
+    fail('Informe o comando SVN');
+}
+
+var cmd = 'svn ' + svnArgStr + ' ' + cmdArgDefault;
+
+cmdArgDefault.split(' ').forEach(function (arg) {
+    'use strict';
+
+    svnArg.push(arg);
+});
+
+console.info(
+    [
+        'Vai execultar o svn '.white,
+        svnArgStr.green.bold,
+        ' nas pastas do SIAL:\n\t'.white,
+        repos.sial.join('\n\t').blue.bold,
+        '\ntambém em:\n\t'.white,
+        repos.aux.join('\n\t').blue.bold,
+        '\ne nas aplicações que usam o SIAL:\n\t'.white,
+        repos.apps.join('\n\t').blue.bold
+    ].join('') + '\n\n'
+);
+
+svnArg.unshift('svn');
+
+var continuation = function () {
+    'use strict';
+
+    console.warn(('\ncmd: ' + cmd + '\n').inverse);
+
+    exec(svnArg.join(' '), function (error, stdout, stderr) {
+        if (stdout) {
+            process.stdout.write(('SVN Out:\n'.inverse + stdout).cyan);
+        }
+
+        if (stderr) {
+            process.stderr.write(('SVN Error:\n'.inverse + stderr).red);
+        }
+
+        if (error !== null) {
+            fail(error);
+        }
+    });
+};
+
+var read = require('read'),
+    textDefault = '\n\tSe ' + 'não'.red + ': sorria e tecle [ENTER]\n\tSe ' + 'sim'.green + ': digite o CPF e tecle [ENTER]\n';
+
+read({prompt: 'Vai precisar de usuário e senha para o SVN?', default: textDefault}, function (error, user) {
+    'use strict';
+
+    if (error) {
+        fail(error);
+    }
+    if (user !== textDefault) {
+        var joker = '\u00D7';
+        read({prompt: "Senha do SVN: ", silent: true, replace: joker}, function (error, pass) {
+            if (error) {
+                fail(error);
+            }
+
+            svnArg.push('--username');
+            svnArg.push(user);
+            svnArg.push('--password');
+            svnArg.push(pass);
+
+            continuation();
+        });
+    } else {
+        continuation();
+    }
+});

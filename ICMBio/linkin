@@ -1,0 +1,98 @@
+#!/bin/bash
+
+cmd=$2
+app=$1
+opt=$3
+
+echo -e "\e[0;35m
+Criador de links simbólicos...
+"
+
+if [ "" != "$app" ]
+then
+	echo -e "\e[0;35mAplicação: \e[1;35m$app
+"
+fi
+
+
+if [ "" != "$cmd" ]
+then
+	echo -e "\e[0;35mLink simbólico de: \e[1;35m$cmd
+"
+fi
+
+if [ "" != "$opt" ]
+then
+	echo -e "\e[0;35mPassando as opções: \e[1;35m$opt
+"
+fi
+
+echo -e "\e[1;0m"
+
+
+usage="\e[0;0m
+uso:
+\e[1;32mlinkin \e[1;31maplicacao \e[0;36m[layout|config|application|data|library]\e[0;0m
+-- ou --
+\e[1;32mlinkin \e[1;31maplicacao\e[1;34m \e[0;36mwebservice\e[1;36m nome_do_servico\e[0;0m
+\e[1;0m"
+
+if [ "" = "$app" ]
+then
+	echo -e "\e[0;31m
+		): ERRO! Informe a aplicação
+		$usage
+	"
+	exit
+fi
+
+case $cmd in
+    "layout")
+		ln -vis /var/www/html/$app/br/gov/mainapp/application/layout/$app.phtml /var/www/html/mainapp/br/gov/mainapp/application/layout/
+    ;;
+
+    "config")
+		ln -vis /var/www/html/$app/br/gov/mainapp/application/config/config.$app.ini /var/www/html/mainapp/br/gov/mainapp/application/config/
+    ;;
+
+    "application")
+		ln -vis /var/www/html/$app/br/gov/mainapp/application/$app /var/www/html/mainapp/br/gov/mainapp/application/
+    ;;
+
+    "public")
+		ln -vis /var/www/html/$app/br/gov/mainapp/public/media/sisicmbio/$app /var/www/html/mainapp/br/gov/mainapp/public/media/sisicmbio/
+    ;;
+
+    "data")
+		ln -vis /var/www/html/$app/br/gov/mainapp/data/$app /var/www/html/mainapp/br/gov/mainapp/data/
+	;;
+
+    "library")
+		ln -vis /var/www/html/$app/br/gov/mainapp/library/$app /var/www/html/mainapp/br/gov/mainapp/library/
+    ;;
+
+
+    "webservice")
+		if [ "" = "$opt" ]
+		then
+			echo -e "\e[0;31m
+				): ERRO! Informe a o nome do serviço
+				$usage
+			"
+			exit
+		fi
+		ln -vis /var/www/html/$app/br/gov/mainapp/webservice/services-enable/$opt /var/www/html/mainapp/br/gov/mainapp/webservice/services-enable
+    ;;
+
+    *)
+        echo -e "\e[0;31m
+		): ERRO! Informe um comando válido
+		$usage
+		"
+		exit
+    ;;
+esac
+
+echo "
+"
+exit
